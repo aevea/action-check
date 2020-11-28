@@ -1,0 +1,11 @@
+[package]
+name = "action-check"
+version = "0.1.0"
+authors = ["Simon Prochazka <simon@aevea.io>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+github-rs = "0.7"
+serde_json = "1.0"
