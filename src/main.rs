@@ -1,36 +1,26 @@
 mod github;
-use github::{extract_pr_id, parse_repo_name};
-use github_rs::client::{Executor, Github};
-use serde_json::Value;
+use github::{extract_pr_id, get_pr_files, parse_repo_name};
+use github_rs::client::Github;
 use std::env;
 
 fn main() {
-    let token = env::var("GITHUB_TOKEN").unwrap();
-    let repo_string = env::var("GITHUB_REPO").unwrap();
+    let token = env::var("GITHUB_TOKEN").expect("GITHUB_TOKEN is required");
+    let repo_string =
+        env::var("GITHUB_REPO").expect("GITHUB_REPO is required in format owner/name");
 
-    let reference = env::var("GITHUB_REF").unwrap();
+    let reference =
+        env::var("GITHUB_REF").expect("GITHUB_REF is required in format refs/pull/123/merge");
 
     let repo_info = parse_repo_name(repo_string);
 
     let client = Github::new(token).unwrap();
 
-    let pr_data = client
-        .get()
-        .repos()
-        .owner(&*repo_info.owner)
-        .repo(&*repo_info.name)
-        .pulls()
-        .number(&*extract_pr_id(reference))
-        .files()
-        .execute::<Value>();
-    match pr_data {
-        Ok((headers, status, json)) => {
-            println!("{:#?}", headers);
-            println!("{}", status);
-            if let Some(json) = json {
-                println!("{}", json);
-            }
-        }
-        Err(e) => println!("{}", e),
-    }
+    let pr_data = get_pr_files(
+        client,
+        &*repo_info.owner,
+        &*repo_info.name,
+        &*extract_pr_id(reference),
+    );
+
+    println!("{:?}", pr_data)
 }
