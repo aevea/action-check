@@ -13,4 +13,4 @@ jobs:
       - run: git fetch --no-tags --prune --depth=5 origin main
 
       - name: Commitsar check
-        uses: docker://aevea/commitsar:0.15.0
+        uses: docker://aevea/commitsar:0.20.2
